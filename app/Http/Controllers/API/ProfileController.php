@@ -45,7 +45,7 @@ class ProfileController extends Controller
             $validator = Validator::make($request->all(), [
                 'id' => "required",
                 'name' => 'required|string',
-                'email' => 'required|email|string'
+                'email' => 'required|email|string|unique:users,email,'.auth('api')->user()->id
             ]);
 
             if($validator->fails()) { 

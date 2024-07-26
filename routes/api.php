@@ -9,6 +9,7 @@ Route::group(['prefix' => '/v1', 'as' => 'api.'], function () {
 });**/
 
 use App\Http\Controllers\API\AuthController;
+use App\Http\Controllers\API\BusinessHouseController;
 use App\Http\Controllers\API\HouseownerController;
 use App\Http\Controllers\API\MemberController;
 use App\Http\Controllers\API\ProfileController;
@@ -43,6 +44,11 @@ Route::middleware('checkUser')->group(function(){
 	//Houseowners
 	Route::prefix('house-owner')->group(function(){
 		Route::get('/',[HouseownerController::class,'houseowner']);
+	});
+
+	//Business House
+	Route::prefix('business-house')->group(function(){
+		Route::get('/',[BusinessHouseController::class,'businessHouse']);
 	});
 });
 

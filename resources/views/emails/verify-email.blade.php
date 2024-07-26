@@ -10,7 +10,7 @@
 
 <body>
     <p>{{$data['body']}}</p>
-    <a href="{{$data['url']}}">Click here to Verify Mail</a>
+    <a href="{{$data['url']}}">Click here to Verify your email</a>
     <p>Thank You.</p>
 </body>
 
