@@ -23,7 +23,7 @@
         "qcod/laravel-app-settings": "^1.5",
         "shankhadev/bsdate": "master-dev",
         "spatie/laravel-activitylog": "^3.17",
-        "spatie/laravel-medialibrary": "*",
+        "spatie/laravel-medialibrary": "^7.18",
         "spatie/laravel-permission": "^3.0",
         "tymon/jwt-auth": "^1.0",
         "typicms/nestablecollection": "*",

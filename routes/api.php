@@ -39,6 +39,7 @@ Route::middleware('checkUser')->group(function(){
 	//Members
 	Route::prefix('member')->group(function(){
 		Route::get('/{slug?}',[MemberController::class,'member']);
+		Route::post('create',[MemberController::class,'store']);
 	});
 
 	//Houseowners

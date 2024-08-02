@@ -2,7 +2,10 @@
 @section('title','User Index')
 @section('content')
 <style>
-button{border:none;background-color:transparent;}
+	button {
+		border: none;
+		background-color: transparent;
+	}
 </style>
 <div class="main-content">
 	<div class="page-content">
@@ -36,9 +39,10 @@ button{border:none;background-color:transparent;}
 								</div>
 								<div class="col-sm-auto">
 									<div class="d-flex flex-wrap align-items-start gap-2">
-											<a class="btn btn-soft-success" href="{{ route('admin.users.create') }}">
-												<i class="ri-add-circle-line align-middle me-1"></i> {{ trans('global.add') }} {{ trans('cruds.user.title_singular') }}
-											</a>
+										<a class="btn btn-soft-success" href="{{ route('admin.users.create') }}">
+											<i class="ri-add-circle-line align-middle me-1"></i> {{ trans('global.add')
+											}} {{ trans('cruds.user.title_singular') }}
+										</a>
 									</div>
 								</div>
 							</div>
@@ -73,72 +77,87 @@ button{border:none;background-color:transparent;}
 									</thead>
 									<tbody>
 										@foreach($users as $key => $user)
-											<tr data-entry-id="{{ $user->id }}">
-												<td scope="row" >
+										<tr data-entry-id="{{ $user->id }}">
+											<td scope="row">
 
-												</td>
-												<td>
-													{{ $user->id ?? '' }}
-												</td>
-												<td>
-													<div class="d-flex gap-2 align-items-center">																					
-														<div class="flex-shrink-0">
-															<img src="{{asset('storage/avatar-'.$user->id.'.png')}}" class="avatar-xs rounded-circle" alt="{{$user->name}}" title="{{$user->name}}">
-														</div>
-														<div class="flex-grow-1">
-															{{ $user->name ?? '' }}
-														</div>
+											</td>
+											<td>
+												{{ $user->id ?? '' }}
+											</td>
+											<td>
+												<div class="d-flex gap-2 align-items-center">
+													<div class="flex-shrink-0">
+														<img src="{{asset('storage/avatar-'.$user->id.'.png')}}"
+															class="avatar-xs rounded-circle" alt="{{$user->name}}"
+															title="{{$user->name}}">
 													</div>
-												</td>
-												<td>
+													<div class="flex-grow-1">
+														{{ $user->name ?? '' }}
+													</div>
+												</div>
+											</td>
+											<td>
 
-												{{--<form action="{{ route('users.users_change', $user->id) }}" method="POST">
+												{{--<form action="{{ route('users.users_change', $user->id) }}"
+													method="POST">
 													<label class="switch">
-														<input type="checkbox" {{ $user->status=="on" ? "checked" : '' }}>
+														<input type="checkbox" {{ $user->status=="on" ? "checked" : ''
+														}}>
 														<span class="slider round"></span>
 													</label>
 													<input type="hidden" name="_token" value="{{ csrf_token() }}">
-													<input type="submit" class="btn btn-xs btn-danger" value="{{ trans('global.delete') }}">
+													<input type="submit" class="btn btn-xs btn-danger"
+														value="{{ trans('global.delete') }}">
 												</form>--}}
-													<div class="form-check form-switch form-switch-success">
-														<input class="form-check-input statuschng" data-id="{{$user->id}}" type="checkbox" role="switch" {{ $user->status=="1" ? "checked" : "" }}>														
-													</div>
-													{{--<label class="switch">
-														<input class="statuschng" data-id="{{$user->id}}" type="checkbox" {{ $user->status=="1" ? "checked" : "" }}>
-														<span class="slider round"></span>
-													</label>--}}
-												</td>
-												<td>
-													{{ $user->email ?? '' }}
-												</td>
-												<td>
-													@foreach($user->roles()->pluck('name') as $role)
-														<span class="badge badge-soft-info">{{ $role }}</span>
-													@endforeach
-												</td>
-												<td>
-													@if(auth()->user()->name=='Admin' && $user->id!=1)
-													<a class="link-warning fs-15" href="{{ route('admin.impersonate', $user->id) }}">
-														<i class="mdi mdi-account-lock-open"></i>
-													</a>
-													@endif
-													<a class="link-success fs-15" href="{{ route('admin.users.show', $user->id) }}">
-														<i class="ri-eye-line"></i>
-													</a>
+												<div class="form-check form-switch form-switch-success">
+													<input class="form-check-input statuschng" data-id="{{$user->id}}"
+														type="checkbox" role="switch" {{ $user->status=="1" ? "checked"
+													: "" }}>
+												</div>
+												{{--<label class="switch">
+													<input class="statuschng" data-id="{{$user->id}}" type="checkbox" {{
+														$user->status=="1" ? "checked" : "" }}>
+													<span class="slider round"></span>
+												</label>--}}
+											</td>
+											<td>
+												{{ $user->email ?? '' }}
+											</td>
+											<td>
+												@foreach($user->roles()->pluck('name') as $role)
+												<span class="badge badge-soft-info">{{ $role }}</span>
+												@endforeach
+											</td>
+											<td>
+												@if(auth()->user()->name=='Admin' && $user->id!=1)
+												<a class="link-warning fs-15"
+													href="{{ route('admin.impersonate', $user->id) }}">
+													<i class="mdi mdi-account-lock-open"></i>
+												</a>
+												@endif
+												<a class="link-success fs-15"
+													href="{{ route('admin.users.show', $user->id) }}">
+													<i class="ri-eye-line"></i>
+												</a>
 
-													<a class="link-info fs-15" href="{{ route('admin.users.edit', $user->id) }}">
-														<i class="ri-edit-2-line"></i>
-													</a>
+												<a class="link-info fs-15"
+													href="{{ route('admin.users.edit', $user->id) }}">
+													<i class="ri-edit-2-line"></i>
+												</a>
 
-													<form action="{{ route('admin.users.destroy', $user->id) }}" method="POST" onsubmit="return confirm('{{ trans('global.areYouSure') }}');" style="display: inline-block;">
-														<input type="hidden" name="_method" value="DELETE">
-														<input type="hidden" name="_token" value="{{ csrf_token() }}">
-														<button type="submit" class="link-danger fs-15" value="Submit"><i class="ri-delete-bin-5-line"></i></button>
-													</form>
+												<form action="{{ route('admin.users.destroy', $user->id) }}"
+													method="POST"
+													onsubmit="return confirm('{{ trans('global.areYouSure') }}');"
+													style="display: inline-block;">
+													<input type="hidden" name="_method" value="DELETE">
+													<input type="hidden" name="_token" value="{{ csrf_token() }}">
+													<button type="submit" class="link-danger fs-15" value="Submit"><i
+															class="ri-delete-bin-5-line"></i></button>
+												</form>
 
-												</td>
+											</td>
 
-											</tr>
+										</tr>
 										@endforeach
 									</tbody>
 								</table>
@@ -154,8 +173,7 @@ button{border:none;background-color:transparent;}
 @section('scripts')
 @parent
 <script>
-
-toastr.options = {
+	toastr.options = {
           "closeButton": true,
           "newestOnTop": true,
           "positionClass": "toast-top-right"

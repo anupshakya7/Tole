@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 use Spatie\MediaLibrary\File;
 use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\MediaCollections\Models\Media;
-use Spatie\MediaLibrary\InteractsWithMedia;
+use Spatie\MediaLibrary\HasMedia\InteractsWithMedia;
 
 class BusinessHouse extends Model implements HasMedia
 {
