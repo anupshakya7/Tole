@@ -2,8 +2,13 @@
 
 namespace App\Http\Controllers\API;
 
+use App\Contactdetail;
 use App\Http\Controllers\Controller;
 use App\Member;
+use App\Memberdocument;
+use App\Membereducation;
+use App\Memberfamily;
+use App\Membermedical;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -95,7 +100,133 @@ class MemberController extends Controller
 
         if ($user) {
             $member = new Member();
-            
+            $nepalidate = explode('-', $request->dob_bs);
+            $year = $nepalidate[0];
+            $month = $nepalidate[1];
+            $day = $nepalidate[2];
+
+            if ($year >= 2000) {
+                $converttoad = \Bsdate::nep_to_eng($year, $month, $day);
+                $dated = $converttoad['year'] . '-' . $converttoad['month'] . '-' . $converttoad['date'];
+            } else {
+                $dated = "N/A";
+            }
+
+            if ($request->hasfile('image')) {
+                $member->addMedia($request->image)->toMediaCollection();
+            } else {
+                $member->image = NULL;
+            }
+
+            $user = auth('api')->user()->id;
+            $member->full_name = $request->full_name;
+            $member->fullname_np = $request->fullname_np;
+            $member->dob_bs = $request->dob_bs;
+            $member->dob_ad = $dated;
+            $member->gender = $request->gender;
+            if ($request->martial_status != 9) {
+                $member->martial_status = $request->martial_status;
+            }
+            $member->citizenship = $request->citizenship;
+            $member->birth_registration = $request->birth_registration;
+            $member->national_id = $request->national_id;
+            $member->house_no = $request->house_no;
+            $member->road = $request->road;
+            $member->tol = $request->tol;
+            $member->blood_group = $request->blood_grp;
+            $member->occupation_id = $request->occupation;
+            $member->created_by = $user;
+
+            if ($member->save()) {
+                $memberid = $member->id;
+                $contact = new Contactdetail();
+                $education = new Membereducation();
+                $family = new Memberfamily();
+                $medical = new Membermedical();
+
+                // Member Contact
+                $contact->member_id = $memberid;
+                $contact->temporary_address = $request->temporary_address;
+                $contact->contact_no = $request->contact_no;
+                $contact->mobile_no = $request->mobile_no;
+                $contact->email = $request->email;
+                $contact->created_by = $user;
+                $contact->save();
+
+                // Related Family
+                $family->member_id = $memberid;
+                $family->grandfather_name = $request->grandfather_name;
+                $family->grandfather_np = $request->grandfather_np;
+                $family->grandfather_citizen = $request->grandfather_citizen;
+                $family->grandmother_name = $request->grandmother_name;
+                $family->grandmother_np = $request->grandmother_np;
+                $family->grandmother_citizen = $request->grandmother_citizen;
+                $family->father_name = $request->father_name;
+                $family->father_np = $request->father_np;
+                $family->father_citizen = $request->father_citizen;
+                $family->mother_name = $request->mother_name;
+                $family->mother_np = $request->mother_np;
+                $family->mother_citizen = $request->mother_citizen;
+                $family->spouse_name = $request->spouse_name;
+                $family->spouse_np = $request->spouse_np;
+                $family->spouse_citizen = $request->spouse_citizen;
+                $family->created_by = $user;
+                $family->save();
+
+                //Member Education
+                $education->member_id = $memberid;
+                $education->last_qualification = $request->last_qualification;
+                $education->passed_year = $request->passed_year;
+                $education->created_by = $user;
+                $education->save();
+
+                // Member Medical
+                if (!empty($request->medical_problem)) {
+                    foreach ($request->medical_problem as $i => $prob) {
+                        if ($prob != 'NULL') {
+                            $detail = [
+                                "member_id" => $memberid,
+                                "medical_problem" => $prob,
+                                "created_by" => $user
+                            ];
+
+                            $medical::insert($detail);
+                        }
+                    }
+                }
+
+                $documents = new Memberdocument();
+
+                if ($request->hasFile('file')) {
+                    foreach ($request->file("file") as $i => $file) {
+                        $extension = strtolower(trim($file->getClientOriginalExtension()));
+                        $docno = str_replace('/', '-', $request->doc_number[$i]);
+                        $filename = $memberid . '-' . $docno . '-' . $request->doc_type[$i] . '.' . $extension;
+
+                        $fullpath = $request->doc_type[$i] . '/' . $filename;
+                        $path = $file->storeAs($request->doc_type[$i], $filename);
+
+                        $detail = [
+                            "member_id" => $memberid,
+                            "doc_type" => $request->doc_type[$i],
+                            "doc_number" => $request->doc_number[$i],
+                            "file" => $fullpath,
+                            "created_by" => $user,
+                        ];
+                        $documents::insert($detail);
+                    }
+                }
+
+                return response()->json([
+                    'success' => true,
+                    'message' => 'Data Added Successfully'
+                ]);
+            } else {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Sorry!! But the data could not be added.'
+                ]);
+            }
         } else {
             return response()->json([
                 'success' => false,
