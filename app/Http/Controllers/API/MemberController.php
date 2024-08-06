@@ -13,6 +13,8 @@ use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
+use PhpOffice\PhpSpreadsheet\Writer\Xlsx\Rels;
+use Spatie\MediaLibrary\Models\Media;
 
 class MemberController extends Controller
 {
@@ -97,7 +99,7 @@ class MemberController extends Controller
         if ($validator->fails()) {
             return response()->json($validator->errors(), 400);
         }
-
+        
         if ($user) {
             $member = new Member();
             $nepalidate = explode('-', $request->dob_bs);
@@ -233,5 +235,100 @@ class MemberController extends Controller
                 'message' => 'User is not Authenticated'
             ]);
         }
+    }
+
+    public function update(Request $request,$id){
+        $user = $request->user('api');
+        if($user->hasRole('administrator')){
+            $member = Member::find($id);
+            if($request->file('image')){
+                if(isset($request->mediaid) && !empty($request->mediaid)){
+                    $media = Media::where('model_id',$request->mediaid)->first();
+                    if($media){
+                        $model_type = $media->model_type;
+                        $model = $model_type::find($media->model_id);
+                        $model->deleteMedia($media->id);
+                    }
+                }
+                $member->addMedia($request->image)->toMediaCollection();
+            }
+    
+            $nepalidate = explode("-",$request->dob_bs);
+            $year = $nepalidate[0];
+            $month = $nepalidate[1];
+            $day = $nepalidate[2];
+    
+            if($year >= 2000){
+                $converttoad = \Bsdate::nep_to_eng($year,$month,$day);
+                $dated = $converttoad['year'].'-'.$converttoad['year'].'-'.$converttoad['date'];
+            }else{
+                $dated = "N/A";
+            }
+
+            $member->full_name = $request->full_name;
+            $member->fullname_np = $request->fullname_np;
+            $member->dob_bs = $request->dob_bs;
+            $member->dob_ad = $request->dob_ad;
+            $member->gender = $request->gender;
+            $member->martial_status = $request->martial_status;
+            $member->citizenship = $request->citizenship;
+            $member->birth_registration = $request->birth_registration;
+            $member->national_id = $request->national_id;
+            $member->house_no = $request->house_no;
+            $member->road = $request->road;
+            $member->tol = $request->tol;
+            $member->blood_group = $request->blood_grp;
+            $member->occupation_id = $request->occupation;
+    
+            if($member->save()){
+                return response()->json([
+                    'success'=>true,
+                    'message'=>'Member '.$request->full_name.' updated successfully'
+                ]);
+            }else{
+                return response()->json([
+                    'success'=>false,
+                    'message'=>'Member '.$request->full_name.' could not be Updated'
+                ]);
+            }
+        }else{
+            return response()->json([
+                'success'=>false,
+                'message'=>'User is not allowed'
+            ]);
+        }
+       
+        
+    }
+
+    public function delete(Request $request,$id){
+        $user = $request->user('api');
+
+        if($user->hasRole('administrator')){
+            $member =  Member::find($id);
+            if($member){
+                Contactdetail::where('member_id',$member->id)->delete();
+                Membereducation::where('member_id',$member->id)->delete();
+                Memberfamily::where('member_id',$member->id)->delete();
+                Membermedical::where('member_id',$member->id)->delete();
+    
+                $member->delete();
+                return response()->json([
+                    'success'=>true,
+                    'message'=>$member->full_name.' data has been Deleted!!!'
+                ]);
+            }else{
+                return response()->json([
+                    'success'=>false,
+                    'message'=>'Member Not Found'
+                ]);
+            }
+        }else{
+            return response()->json([
+                'success'=>false,
+                'message'=>'User is not allowed'
+            ]);
+        }
+       
     }
 }

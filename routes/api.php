@@ -40,16 +40,24 @@ Route::middleware('checkUser')->group(function(){
 	Route::prefix('member')->group(function(){
 		Route::get('/{slug?}',[MemberController::class,'member']);
 		Route::post('create',[MemberController::class,'store']);
+		Route::put('update/{id}',[MemberController::class,'update']);
+		Route::delete('delete/{id}',[MemberController::class,'delete']);
 	});
 
 	//Houseowners
 	Route::prefix('house-owner')->group(function(){
 		Route::get('/',[HouseownerController::class,'houseowner']);
+		Route::post('/',[HouseownerController::class,'store']);
+		Route::put('/{id}',[HouseownerController::class,'update']);
+		Route::delete('/{id}',[HouseownerController::class,'delete']);
 	});
 
 	//Business House
 	Route::prefix('business-house')->group(function(){
 		Route::get('/',[BusinessHouseController::class,'businessHouse']);
+		Route::post('/',[BusinessHouseController::class,'store']);
+		Route::put('/{id}',[BusinessHouseController::class,'update']);
+		Route::delete('/{id}',[BusinessHouseController::class,'delete']);
 	});
 });
 

@@ -129,8 +129,6 @@ class BusinessHouseController extends BaseController
             return abort(401);
         }
         
-        
-       
         $business = new BusinessHouse();
         
         
