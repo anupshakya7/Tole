@@ -18,6 +18,7 @@ use Spatie\MediaLibrary\Models\Media;
 
 class MemberController extends Controller
 {
+    //Get Members
     public function member(Request $request, $slug = null)
     {
         $user = $request->user('api');
@@ -65,6 +66,7 @@ class MemberController extends Controller
         }
     }
 
+    //Create Member
     public function store(Request $request)
     {
         $user = $request->user('api');
@@ -136,7 +138,7 @@ class MemberController extends Controller
             $member->road = $request->road;
             $member->tol = $request->tol;
             $member->blood_group = $request->blood_grp;
-            $member->occupation_id = $request->occupation;
+            $member->occupation_id = $request->occupation_id;
             $member->created_by = $user;
 
             if ($member->save()) {
@@ -237,6 +239,7 @@ class MemberController extends Controller
         }
     }
 
+    //Update Member
     public function update(Request $request,$id){
         $user = $request->user('api');
         if($user->hasRole('administrator')){
@@ -260,7 +263,7 @@ class MemberController extends Controller
     
             if($year >= 2000){
                 $converttoad = \Bsdate::nep_to_eng($year,$month,$day);
-                $dated = $converttoad['year'].'-'.$converttoad['year'].'-'.$converttoad['date'];
+                $dated = $converttoad['year'].'-'.$converttoad['month'].'-'.$converttoad['date'];
             }else{
                 $dated = "N/A";
             }
@@ -268,7 +271,7 @@ class MemberController extends Controller
             $member->full_name = $request->full_name;
             $member->fullname_np = $request->fullname_np;
             $member->dob_bs = $request->dob_bs;
-            $member->dob_ad = $request->dob_ad;
+            $member->dob_ad = $request->dob_ad ? $request->dob_ad : $dated;
             $member->gender = $request->gender;
             $member->martial_status = $request->martial_status;
             $member->citizenship = $request->citizenship;
@@ -296,11 +299,10 @@ class MemberController extends Controller
                 'success'=>false,
                 'message'=>'User is not allowed'
             ]);
-        }
-       
-        
+        }   
     }
 
+    //Delete Member
     public function delete(Request $request,$id){
         $user = $request->user('api');
 

@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\Validator;
 
 class HouseownerController extends Controller
 {
+    //Get Houseowner
     public function houseowner(Request $request)
     {
         $user = $request->user('api');
@@ -31,6 +32,7 @@ class HouseownerController extends Controller
         }
     }
 
+    //Create Houseowner
     public function store(Request $request)
     {
         $owner = new Houseowner();
@@ -61,6 +63,7 @@ class HouseownerController extends Controller
         }
     }
 
+    //Update Houseowner
     public function update(Request $request, $id)
     {
         $owner = Houseowner::find($id);
@@ -99,6 +102,7 @@ class HouseownerController extends Controller
         }
     }
 
+    //Delete Houseowner
     public function delete($id){
         $owner = Houseowner::find($id);
 
